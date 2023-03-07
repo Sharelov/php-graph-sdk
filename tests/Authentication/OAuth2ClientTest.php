@@ -27,9 +27,8 @@ use Facebook\Facebook;
 use Facebook\FacebookApp;
 use Facebook\Authentication\OAuth2Client;
 
-class OAuth2ClientTest extends \PHPUnit_Framework_TestCase
+class OAuth2ClientTest extends \PHPUnit\Framework\TestCase
 {
-
     /**
      * @const The foo Graph version
      */
@@ -45,7 +44,10 @@ class OAuth2ClientTest extends \PHPUnit_Framework_TestCase
      */
     protected $oauth;
 
-    protected function setUp()
+    /**
+     * @return void
+     */
+    protected function setUp(): void
     {
         $app = new FacebookApp('123', 'foo_secret');
         $this->client = new FooFacebookClientForOAuth2Test();
@@ -79,7 +81,7 @@ class OAuth2ClientTest extends \PHPUnit_Framework_TestCase
         $scope = ['email', 'base_foo'];
         $authUrl = $this->oauth->getAuthorizationUrl('https://foo.bar', 'foo_state', $scope, ['foo' => 'bar'], '*');
 
-        $this->assertContains('*', $authUrl);
+        $this->assertStringContainsString('*', $authUrl);
 
         $expectedUrl = 'https://www.facebook.com/' . static::TESTING_GRAPH_VERSION . '/dialog/oauth?';
         $this->assertTrue(strpos($authUrl, $expectedUrl) === 0, 'Unexpected base authorization URL returned from getAuthorizationUrl().');
@@ -93,7 +95,7 @@ class OAuth2ClientTest extends \PHPUnit_Framework_TestCase
             'foo' => 'bar',
         ];
         foreach ($params as $key => $value) {
-            $this->assertContains($key . '=' . urlencode($value), $authUrl);
+            $this->assertStringContainsString($key . '=' . urlencode($value), $authUrl);
         }
     }
 
