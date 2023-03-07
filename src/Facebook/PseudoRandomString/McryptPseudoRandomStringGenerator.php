@@ -54,6 +54,7 @@ class McryptPseudoRandomStringGenerator implements PseudoRandomStringGeneratorIn
     {
         $this->validateLength($length);
 
+        // No change because the tests and factory validate if mcrypt_create_iv functions exists to use this class
         $binaryString = mcrypt_create_iv($length, MCRYPT_DEV_URANDOM);
 
         if ($binaryString === false) {

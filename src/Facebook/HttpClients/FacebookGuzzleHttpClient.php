@@ -27,9 +27,9 @@ use Facebook\Http\GraphRawResponse;
 use Facebook\Exceptions\FacebookSDKException;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\Message\ResponseInterface;
-use GuzzleHttp\Ring\Exception\RingException;
+use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Exception\RequestException;
+use Psr\Http\Message\ResponseInterface;
 
 class FacebookGuzzleHttpClient implements FacebookHttpClientInterface
 {
@@ -52,20 +52,19 @@ class FacebookGuzzleHttpClient implements FacebookHttpClientInterface
     public function send($url, $method, $body, array $headers, $timeOut)
     {
         $options = [
-            'headers' => $headers,
-            'body' => $body,
             'timeout' => $timeOut,
             'connect_timeout' => 10,
             'verify' => __DIR__ . '/certs/DigiCertHighAssuranceEVRootCA.pem',
         ];
-        $request = $this->guzzleClient->createRequest($method, $url, $options);
+
+        $request = new Request($method, $url, $headers, $body);
 
         try {
-            $rawResponse = $this->guzzleClient->send($request);
+            $rawResponse = $this->guzzleClient->send($request, $options);
         } catch (RequestException $e) {
             $rawResponse = $e->getResponse();
 
-            if ($e->getPrevious() instanceof RingException || !$rawResponse instanceof ResponseInterface) {
+            if (!$rawResponse instanceof ResponseInterface) {
                 throw new FacebookSDKException($e->getMessage(), $e->getCode());
             }
         }
